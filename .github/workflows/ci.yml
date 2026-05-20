@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check each skill has SKILL.md and README.md
+        run: |
+          set -e
+          skills=(
+            agent-wallet
+            multichain-signing
+            did-identity
+            swap-skill
+            stake-skill
+            transfer-skill
+            balance-portfolio
+            x402-payment
+            mcp-wallet-server
+            mcp-chain-server
+            defi-adapters
+            369wallet-guide
+          )
+          for s in "${skills[@]}"; do
+            test -f "$s/SKILL.md" || { echo "missing $s/SKILL.md"; exit 1; }
+            test -f "$s/README.md" || { echo "missing $s/README.md"; exit 1; }
+            test -d "$s/examples" || { echo "missing $s/examples"; exit 1; }
+            test -d "$s/resources" || { echo "missing $s/resources"; exit 1; }
+          done
+          echo "all skills present"
